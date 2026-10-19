@@ -1,21 +1,26 @@
-How to Remove Extra Spaces from Text in DuckDB
+# How to Remove Extra Spaces from Text in DuckDB
 
-Overview
+## Overview
 
 CSV files can contain unwanted spaces before or after text values. These spaces can affect data quality and make values harder to compare.
 
-DuckDB's TRIM() function removes spaces from the beginning and end of a string.
-Example problem
+DuckDB's `TRIM()` function removes spaces from the beginning and end of a string.
+
+## Example problem
 
 Consider a customer record with a name that contains a leading space:
 
+```
 " John"
+```
 
-The name looks almost identical to John, but the extra space is still part of the text value.
-Solution
+The name looks almost identical to `John`, but the extra space is still part of the text value.
 
-Use TRIM() to remove the extra spaces.
+## Solution
 
+Use `TRIM()` to remove the extra spaces.
+
+```sql
 SELECT
     first_name,
     TRIM(first_name) AS cleaned_name
@@ -30,29 +35,26 @@ FROM read_csv(
     }
 )
 WHERE first_name <> TRIM(first_name);
-Expected result
+```
 
-first_name
+## Expected result
 
-cleaned_name
+| first_name | cleaned_name |
+|------------|--------------|
+| `" John"`  | `"John"`     |
 
- John
+The quotation marks are added here only to make the leading space visible. The query displays the original value beside the cleaned value.
 
-John
-The query displays the original value beside the cleaned value.
+## How it works
 
-How it works
+- `TRIM(first_name)` removes spaces from the beginning and end of the name.
+- `AS cleaned_name` gives the cleaned value a descriptive column name.
+- `WHERE first_name <> TRIM(first_name)` returns only rows where trimming changes the original value.
 
-TRIM(first_name) removes spaces from the beginning and end of the name.
+## Important note
 
-AS cleaned_name gives the cleaned value a descriptive column name.
+This query displays cleaned values but does not modify the original CSV file. To save the cleaned data, you need to export the results or use another workflow.
 
-WHERE first_name <> TRIM(first_name) returns only rows where trimming changes the original value.
+## Key takeaway
 
-Important note
-
-This query displays cleaned values but does not modify the original CSV file. To save the cleaned data, you would need to export the results or use another workflow.
-
-Key takeaway
-
-Use TRIM() to remove unwanted leading and trailing spaces from text values in DuckDB. Filtering for values that change after trimming helps you identify records that need attention.
+Use `TRIM()` to remove unwanted leading and trailing spaces from text values in DuckDB. Filtering for values that change after trimming helps you identify records that need attention.
